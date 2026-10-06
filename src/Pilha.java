@@ -54,7 +54,31 @@ public class Pilha<E> {
 	 */
 	public Pilha<E> subPilha(int numItens) {
 		
-		// TODO
-		return null;
+		if(numItens < 0){
+			throw new IllegalArgumentException("O valor não pode ser negativo");
+		}
+
+		Object[] temp = new Object[numItens];
+
+		Celula<E> atual = this.topo;
+		int cont = 0;
+		
+		while (cont < numItens) {
+			temp[cont] = atual.getItem();
+			atual = atual.getProximo();
+			cont++;
+		}
+
+		if(cont < numItens){
+			throw new IllegalArgumentException("Não há pilha que condiz com numero de itens, o numero de itens é de: " +numItens);
+		}
+
+		Pilha<E> novaPilha = new Pilha<>();
+
+		for(int i = numItens-1; i>= 0; i--){
+			novaPilha.empilhar((E) temp[i]);
+		}
+
+		return novaPilha;
 	}
 }
