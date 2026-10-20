@@ -209,10 +209,13 @@ public class App {
      * @param pedido O pedido que deve ser finalizado.
      */
     public static void finalizarPedido(Pedido pedido) {
-    	
-    	// TODO
+    	        if (pedido == null) {
+            System.out.println("Não há pedido em aberto para finalizar.");
+            return;
+        }
+        pilhaPedidos.empilhar(pedido);
+        System.out.println("Pedido finalizado e armazenado com sucesso!");
     }
-    
     public static void listarProdutosPedidosRecentes() {
     	
     	// TODO
@@ -228,7 +231,6 @@ public class App {
         Pedido pedido = null;
         
         int opcao = -1;
-      
         do{
             opcao = menu();
             switch (opcao) {
