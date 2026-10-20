@@ -52,33 +52,29 @@ public class Pilha<E> {
 	 * @return uma nova instância de Pilha<E> contendo os numItens primeiros elementos.
 	 * @throws IllegalArgumentException se a pilha não contém numItens elementos.
 	 */
+	public int tamanho() {
+		int quantidade = 0;
+		for (Celula<E> atual = topo; atual != fundo; atual = atual.getProximo()) {
+			quantidade++;
+		}
+		return quantidade;
+	}
+
 	public Pilha<E> subPilha(int numItens) {
-		
-		if(numItens < 0){
-			throw new IllegalArgumentException("O valor não pode ser negativo");
+		if (numItens < 0 || numItens > tamanho()) {
+			throw new IllegalArgumentException("Quantidade inválida de itens para a subpilha: " + numItens);
 		}
 
-		Object[] temp = new Object[numItens];
-
-		Celula<E> atual = this.topo;
-		int cont = 0;
-		
-		while (cont < numItens) {
-			temp[cont] = atual.getItem();
+		Pilha<E> invertida = new Pilha<>();
+		Pilha<E> resultado = new Pilha<>();
+		Celula<E> atual = topo;
+		for (int i = 0; i < numItens; i++) {
+			invertida.empilhar(atual.getItem());
 			atual = atual.getProximo();
-			cont++;
 		}
-
-		if(cont < numItens){
-			throw new IllegalArgumentException("Não há pilha que condiz com numero de itens, o numero de itens é de: " +numItens);
+		while (!invertida.vazia()) {
+			resultado.empilhar(invertida.desempilhar());
 		}
-
-		Pilha<E> novaPilha = new Pilha<>();
-
-		for(int i = numItens-1; i>= 0; i--){
-			novaPilha.empilhar((E) temp[i]);
-		}
-
-		return novaPilha;
+		return resultado;
 	}
 }
