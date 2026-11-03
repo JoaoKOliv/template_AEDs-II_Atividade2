@@ -1,71 +1,61 @@
+import java.util.NoSuchElementException;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
-public class Fila <E> extends Celula<E>{
+public class Fila<E> {
+    private Celula<E> inicio, fim;
+    private int tamanho;
 
-    private Celula<E> inicio,fim;
-    Function<E, Double> extrator;
-
-    public Fila(){
-        Celula <E> Sentinela = new Celula<E>();
-        inicio = Sentinela;
-        fim = Sentinela;
+    public Fila() {
+        Celula<E> sentinela = new Celula<>();
+        inicio = sentinela;
+        fim = sentinela;
     }
 
-    boolean filaVazia(){
-        return inicio == fim;
+    public boolean filaVazia() { return inicio == fim; }
+    public int tamanho() { return tamanho; }
+
+    public void enfilar(E item) {
+        Celula<E> nova = new Celula<>(item);
+        fim.setProximo(nova);
+        fim = nova;
+        tamanho++;
     }
 
-    void enfilar(E item){
-        Celula <E> novaCelula = new Celula<E>(item);
-
-        fim.setProximo(novaCelula);
-        fim = novaCelula;
-    }
-
-    E desenfilar(){
-        if(filaVazia()){
-            throw new IllegalArgumentException("Vazia");
-        }
-
+    public E desenfilar() {
+        if (filaVazia()) throw new NoSuchElementException("Fila vazia");
         Celula<E> removida = inicio.getProximo();
-
         E item = removida.getItem();
-
         inicio.setProximo(removida.getProximo());
-
-        if (fim == removida) {
-            fim = inicio;
-        }
-
+        if (fim == removida) fim = inicio;
+        tamanho--;
         return item;
-
     }
 
-/* Questão 1 - Implemente o método double calcularValorMedio(Function<E, Double> extrator, int
-quantidade) na classe Fila<E>. Esse método deve ser capaz de calcular e retornar o valor médio de um dos
-atributos dos elementos da fila, utilizando uma função de extração fornecida pelo parâmetro extrator, que extrai
-um valor numérico (Double) de cada elemento da fila. Devem ser extraídos valores de apenas os primeiros
-elementos armazenados na fila, de acordo com o parâmetro quantidade.
-
- */
-
-    public double calcularValorMedio(Function <E, Double> extrator, int quantidade){
-
+    /** Calcula a média dos primeiros N elementos sem modificar a fila. */
+    public double calcularValorMedio(Function<E, Double> extrator, int quantidade) {
+        if (extrator == null) throw new IllegalArgumentException("Extrator obrigatório");
+        if (quantidade < 1 || quantidade > tamanho) throw new IllegalArgumentException("Quantidade inválida: " + quantidade);
         double soma = 0;
-        Celula<E> temp = inicio.getProximo();
-
-            for(int i = 0; i < quantidade; i++){
-                temp.getItem();
-                extrator.apply(temp.getItem());
-                
-                temp.getProximo();
-                temp = temp.getProximo();
-
-            }
-
-        /*Function <E, Double> (){
-
-        } */
+        Celula<E> atual = inicio.getProximo();
+        for (int i = 0; i < quantidade; i++) {
+            soma += extrator.apply(atual.getItem());
+            atual = atual.getProximo();
+        }
+        return soma / quantidade;
     }
 
+    /** Filtra somente os N primeiros elementos, preservando a ordem e a fila original. */
+    public Fila<E> filtrar(Predicate<E> condicional, int quantidade) {
+        if (condicional == null) throw new IllegalArgumentException("Condição obrigatória");
+        if (quantidade < 0 || quantidade > tamanho) throw new IllegalArgumentException("Quantidade inválida: " + quantidade);
+        Fila<E> resultado = new Fila<>();
+        Celula<E> atual = inicio.getProximo();
+        for (int i = 0; i < quantidade; i++) {
+            E elemento = atual.getItem();
+            if (condicional.test(elemento)) resultado.enfilar(elemento);
+            atual = atual.getProximo();
+        }
+        return resultado;
+    }
 }
